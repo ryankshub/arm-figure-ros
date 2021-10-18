@@ -2,12 +2,12 @@
 <package format="2">
   <name>homework2</name>
   <version>0.0.0</version>
-  <description>The homework2 package</description>
+  <description>Figure-skate turtle</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="rks@todo.todo">rks</maintainer>
+  <maintainer email="">ryanking-shepard2022@u.northwestern.edu</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
