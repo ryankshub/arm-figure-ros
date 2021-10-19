@@ -41,12 +41,12 @@ class Simodom:
         for calculations.
         """
         # Subscriber of turtle pose
+        rospy.init_node('simodom')
         self._pose_sub = rospy.Subscriber('turtle1/pose', turmsg.Pose, self.pose_callback)
         # Publishes of odometry
         self._odom_pub = rospy.Publisher('/odom', navmsg.Odometry, queue_size=1)
         # Broadcast transform
         self._broadcaster = tf2_ros.TransformBroadcaster()
-        rospy.init_node('simodom')
 
     def pose_callback(self, msg):
         """

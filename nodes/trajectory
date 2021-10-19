@@ -17,8 +17,8 @@ import tf2_ros
 class State(Enum):
     """
     State of the control loop. 
-    RUNNING ~ the turtle follows the figure (start_state)
-    PAUSED ~ the turtle is stopped 
+    RUNNING ~ the turtle follows the figure 
+    PAUSED ~ the turtle is stopped (start state)
     """
     RUNNING = 0
     PAUSED = 1
@@ -71,6 +71,7 @@ class Trajectory:
         State: state ~ Whether the turtle is following figure 8 or not
         """
         # Pull params
+        rospy.init_node('trajectory')
         self._init_x = rospy.get_param("homework2/init_x")
         self._init_y = rospy.get_param("homework2/init_y")
         self._init_theta = rospy.get_param("homework2/init_theta")
@@ -82,7 +83,7 @@ class Trajectory:
         # Create TrajUtil for calculations
         self.traj_util = su.TrajUtil(self.width, self.height, self.period)
         # Publisher for command velocities
-        self._pub = rospy.Publisher('turtle1/cmd_vel', Twist, queue_size=10)
+        self._pub = rospy.Publisher('/turtle1/cmd_vel', Twist, queue_size=10)
         # Service for resume
         self._resume_service = rospy.Service('resume', Empty, self.resume_handler)
         # Service for pause
@@ -108,12 +109,12 @@ class Trajectory:
 
         broadcaster.sendTransform(static_transformStamped)
         # Start State
-        self.state = State.RUNNING
+        self.state = State.PAUSED
 
         #init node
-        rospy.init_node('trajectory')
         self.time_delta = 1./self._pub_rate
-        self.tmr = rospy.Timer(rospy.Duration(self.time_delta), self.main_loop)
+        rospy.Timer(rospy.Duration(self.time_delta), self.main_loop)
+        rospy.spin()
 
     
     def resume_handler(self, req):
@@ -131,13 +132,18 @@ class Trajectory:
         self.state = State.PAUSED
         return EmptyResponse()
 
-    def main_loop(self):
+    def main_loop(self, event):
         """
         Main execution loop of trajectory node
+
+        Args:
+            event: A rospy.Timer event
         """
         if self.state == State.RUNNING:
             linear_vel = self.traj_util.get_linear_vel(self.time_stamp)
+            linear_vel = Vector3(x=linear_vel)
             angular_vel = self.traj_util.get_rotational_vel(self.time_stamp)
+            angular_vel = Vector3(z=angular_vel)
             cmd_vel = Twist(linear=linear_vel, angular=angular_vel)
             self._pub.publish(cmd_vel)
             self.time_stamp += self.time_delta
@@ -149,6 +155,7 @@ class Trajectory:
         else: 
             rospy.signal_shutdown("Trajectory node has entered undefined state")
             exit(1)
+
 
 # Main execution loop
 if __name__ == "__main__":
