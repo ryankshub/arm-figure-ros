@@ -1,0 +1,10 @@
+#Yaml file for trajectory params
+
+homework2: #namespace for the whole package
+  init_x: 5 # initial x_position of robot in meters
+  init_y: 5 # initial y_position of robot in meters
+  init_theta: 1.570796 # initial angle of robot in radians
+  width: 2 # width of figure 8
+  height: 3 # height of figure 8
+  period: 30 # number of seconds to complete 
+  
