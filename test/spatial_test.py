@@ -17,10 +17,10 @@ PKG = 'homework2'
 class BasicTestCase(unittest.TestCase):
     """
     Test Cases which check calulations at times:
-    0 sec (initial time)
-    1 sec (1 sec out)
-    4.67 sec (random time)
-    10 sec (full figure cycle)
+    0 sec (initial time)       [test_zero_all]
+    1 sec (1 sec out)          [test_one_all]
+    4.67 sec (random time)     [test_random_val_all]
+    10 sec (full figure cycle) [test_full_cycle]
 
     This is given the width = height = 1 and period = 10
     """
