@@ -17,10 +17,10 @@ import turtlesim.msg as turmsg #using Pose
 class Simodom:
     """
     ROS Node responsible for converting turtle's pose from odometry frame to
-    base_link frame. Contains a subscriber for the turtle's pose and publishes
+    base_footprint frame. Contains a subscriber for the turtle's pose and publishes
     it in a nav_msgs/Odometry. 
 
-    The node also broadcast a dynamic transform from odom frame to base_link 
+    The node also broadcast a dynamic transform from odom frame to base_footprint 
     frame; these frames are aligned in rotation with no translational difference.
     (Their transformation matrix consist of a zero magnitude translation vector and
     an identity rotation matrix)  
@@ -32,7 +32,7 @@ class Simodom:
         + turtle1/pose Pose ~ current position and velocity of the robot  
 
     BROADCAST:
-        + dynamic odom -> base_link ~ transformation from odometry to base_link 
+        + dynamic odom -> base_footprint ~ transformation from odometry to base_footprint 
     """
     def __init__(self):
         """
@@ -61,12 +61,12 @@ class Simodom:
 
         Broadcast:
         geometry.msg/TransformStamped t ~ dynamic broadcast providing transform 
-            from odom to base_link
+            from odom to base_footprint
         """
         # Prep Odometry message
         pub_odom = navmsg.Odometry()
         pub_odom.header.frame_id = 'odom'
-        pub_odom.child_frame_id = 'base_link'
+        pub_odom.child_frame_id = 'base_footprint'
 
         # Fill PoseWithCovariance for Odometry
         tmp_point = geomsg.Point(x=msg.x, y=msg.y)
@@ -83,11 +83,11 @@ class Simodom:
         tmp_twist_cov = geomsg.TwistWithCovariance(twist=tmp_twist)
         pub_odom.twist = tmp_twist_cov
 
-        # Prep Frame transform for odom to base_link
+        # Prep Frame transform for odom to base_footprint
         t = geomsg.TransformStamped()
         t.header.stamp = rospy.Time.now()
         t.header.frame_id = 'odom'
-        t.child_frame_id = 'base_link'
+        t.child_frame_id = 'base_footprint'
         t.transform.translation.x = msg.x
         t.transform.translation.y = msg.y
         t.transform.translation.z = 0

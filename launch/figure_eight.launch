@@ -6,8 +6,11 @@
     <node name="trajectory" pkg="homework2" type="trajectory">
         <param name="pub_freq" type="int" value="$(arg pub_freq)"/>
     </node>
-    <node name="simodom" pkg="homework2" type="simodom"/>
     <group if="$(eval arg('mode') == 'sim')">
+        <node name="simodom" pkg="homework2" type="simodom"/>
         <node name="turtlesim_node" pkg="turtlesim" type="turtlesim_node"/>
+        <param name="robot_description" command="xacro $(find turtlebot3_description)/urdf/turtlebot3_burger.urdf.xacro"/>
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+        <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
     </group>
 </launch>

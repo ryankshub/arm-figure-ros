@@ -72,8 +72,6 @@ class Trajectory:
         """
         # Pull params
         rospy.init_node('trajectory')
-        self._init_x = rospy.get_param("homework2/init_x")
-        self._init_y = rospy.get_param("homework2/init_y")
         self._init_theta = rospy.get_param("homework2/init_theta")
         self.width = rospy.get_param("homework2/width")
         self.height = rospy.get_param("homework2/height")
@@ -97,8 +95,8 @@ class Trajectory:
         static_transformStamped.child_frame_id = 'odom'
 
         # Transform linear translation
-        static_transformStamped.transform.translation.x = float(self._init_x)
-        static_transformStamped.transform.translation.y = float(self._init_y)
+        static_transformStamped.transform.translation.x = float(0.0)
+        static_transformStamped.transform.translation.y = float(0.0)
         static_transformStamped.transform.translation.z = float(0.0)
         # Transform rotation translation
         quat = tf_conversions.transformations.quaternion_from_euler(0, 0, self._init_theta)
@@ -139,6 +137,7 @@ class Trajectory:
         Args:
             event: A rospy.Timer event
         """
+        # Publish cmd_vel if turtle is running
         if self.state == State.RUNNING:
             linear_vel = self.traj_util.get_linear_vel(self.time_stamp)
             linear_vel = Vector3(x=linear_vel)
@@ -147,6 +146,7 @@ class Trajectory:
             cmd_vel = Twist(linear=linear_vel, angular=angular_vel)
             self._pub.publish(cmd_vel)
             self.time_stamp += self.time_delta
+        # Publish zero cmd_vel if turtle is paused
         elif self.state == State.PAUSED:
             linear_vel = Vector3(x=0)
             angular_vel = Vector3(z=0)
