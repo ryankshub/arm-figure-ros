@@ -1,0 +1,153 @@
+#!/usr/bin/env python3
+# Trajectory Node
+# RKS
+
+# Project imports
+import homework2.spatial_utility as su
+# Python imports
+from enum import Enum
+# 3rd-party imports
+from geometry_msgs.msg import TransformStamped, Twist, Vector3
+import rospy
+from std_srvs.srv import Empty, EmptyResponse
+import tf
+import tf2_ros
+
+
+class State(Enum):
+    """
+    State of the control loop. 
+    RUNNING ~ the turtle follows the figure (start_state)
+    PAUSED ~ the turtle is stopped 
+    """
+    RUNNING = 0
+    PAUSED = 1
+
+class Trajectory:
+    """
+    ROS Node responsible for figure-8 turtle control. Publishes command 
+    velocities to turtle to have to it follow a figure-8 with W width, 
+    H height, and complete in T seconds. Creates 2 service for controling 
+    the turtle, 'pause' and 'resume'. 'pause' will stop the turtle in it's
+    tracks. 'resume' will have the turtle continue following the figure 8.
+
+    The node also broadcast a static transform from world frame to odom frame, 
+    where the odom frame is aligned with world frame rotated by the turtle's
+    initial heading. 
+
+    PUBLISHERS:
+        + turtle_cmd TurtleVelocity ~ linear and angular velocity of turtle
+
+    SERVICES:
+        + pause Empty ~ triggers the turtle to stop following figure-8 pattern.
+            If turtle is already paused, nothing happens
+
+        + resume Empty ~ triggers the turtle to continue following the figure-8
+            pattern. If turtle is already following the figure, nothing happends 
+
+    BROADCAST:
+        + static world -> odom ~ a rotation operation by theta_0, the initial heading
+        of the turtle. 
+    
+    PARAMS:
+        + float width ~ the width of the figure 8 in meters
+        + float height ~ the height of the figure 8 in meters
+        + float period ~ the number of seconds to complete the figure 8
+        + float x ~ the initial x position(in meters) [0,10]
+        + float y ~ the initial y position(in meters) [0,10]
+        + float theta ~ the initial theta position(in radians) (-pi, pi]
+        + float pub_rate [PRIVATE] ~ rate of publishing command (in HZ)
+    """
+    def __init__(self):
+        """
+        Constructor of ROS Node Trajectory class. Creates all ROS 
+        interfaces(subscriber, publisher, etc) as well as internal variable
+        for calculations.
+
+        Public members
+        float: width ~ width of the figure 8
+        float: height ~ height of the figure 8
+        float: period ~ number of second to complete figure 8 loop
+        State: state ~ Whether the turtle is following figure 8 or not
+        """
+        # Pull params
+        self._init_x = rospy.get_param("homework2/init_x")
+        self._init_y = rospy.get_param("homework2/init_y")
+        self._init_theta = rospy.get_param("homework2/init_theta")
+        self.width = rospy.get_param("homework2/width")
+        self.height = rospy.get_param("homework2/height")
+        self.period = rospy.get_param("homework2/period")
+        self._pub_rate = rospy.get_param("~pub_rate")
+        self.time_stamp = 0
+        # Create TrajUtil for calculations
+        self.traj_util = su.TrajUtil(self.width, self.height, self.period)
+        # Publisher for command velocities
+        self._pub = rospy.Publisher('turtle1/cmd_vel', Twist, queue_size=10)
+        # Service for resume
+        self._resume_service = rospy.Service('resume', Empty, self.resume_handler)
+        # Service for pause
+        self._pause_service = rospy.Service('pause', Empty, self.pause_handler)
+        
+        # Broadcaster for static transform
+        broadcaster = tf2_ros.StaticTransformBroadcaster()
+        static_transformStamped = TransformStamped()
+        static_transformStamped.header.stamp = rospy.Time.now()
+        static_transformStamped.header.frame_id = 'world'
+        static_transformStamped.child_frame_id = 'odom'
+
+        # Transform linear translation
+        static_transformStamped.transform.translation.x = float(self._init_x)
+        static_transformStamped.transform.translation.y = float(self._init_y)
+        static_transformStamped.transform.translation.z = float(0.0)
+        # Transform rotation translation
+        quat = tf.transformations.quaternion_from_euler(0, 0, self._init_theta)
+        static_transformStamped.transform.rotation.x = quat[0]
+        static_transformStamped.transform.rotation.y = quat[1]
+        static_transformStamped.transform.rotation.z = quat[2]
+        static_transformStamped.transform.rotation.w = quat[3]
+
+        broadcaster.sendTransform(static_transformStamped)
+        # Start State
+        self.state = State.RUNNING
+
+        #init node
+        rospy.init_node('trajectory')
+        self.time_delta = 1./self._pub_rate
+        self.tmr = rospy.Timer(rospy.Duration(self.time_delta), self.main_loop)
+
+    
+    def resume_handler(self, req):
+        """
+        Service handler which tells the turtle to keep moving
+        """
+        self.state = State.RUNNING
+        return EmptyResponse()
+    
+
+    def pause_handler(self, req):
+        """
+        Service handler which tells the turtle to stop moving
+        """
+        self.state = State.PAUSED
+        return EmptyResponse()
+
+    def main_loop(self):
+        """
+        Main execution loop of trajectory node
+        """
+        if self.state == State.RUNNING:
+            linear_vel = self.traj_util.get_linear_vel(self.time_stamp)
+            angular_vel = self.traj_util.get_rotational_vel(self.time_stamp)
+            cmd_vel = Twist(linear=linear_vel, angular=angular_vel)
+            self.pub(cmd_vel)
+            self.time_stamp += self.time_delta
+        elif self.state == State.PAUSED:
+            linear_vel = Vector3(x=0)
+            angular_vel = Vector3(z=0)
+            cmd_vel = Twist(linear=linear_vel, angular=angular_vel)
+            self.pub(cmd_vel)
+
+
+
+
+        
