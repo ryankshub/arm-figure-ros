@@ -122,7 +122,7 @@ class TrajUtil:
             x acceleration of the robot in meters per second squared
         """
         A = (-2 * np.pi**2 * self.width_m) / self.period_s**2
-        x_ddot = A * sin( (2*np.pi*time_s) / self.period )
+        x_ddot = A * np.sin( (2*np.pi*time_s) / self.period_s )
         return x_ddot
 
     def get_y_ddot(self, time_s):

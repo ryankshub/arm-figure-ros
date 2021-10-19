@@ -9,6 +9,7 @@ import homework2.spatial_utility as su
 import unittest
 
 # 3rd party imports
+import numpy as np
 
 # Constants
 PKG = 'homework2'
@@ -16,10 +17,10 @@ PKG = 'homework2'
 class BasicTestCase(unittest.TestCase):
     """
     Test Cases which check calulations at times:
-    0 sec
-    1 sec
+    0 sec (initial time)
+    1 sec (1 sec out)
     4.67 sec (random time)
-    10 sec
+    10 sec (full figure cycle)
 
     This is given the width = height = 1 and period = 10
     """
@@ -34,107 +35,139 @@ class BasicTestCase(unittest.TestCase):
     def test_zero_all(self):
         self.assertEqual(
             np.around(self.util.get_x(self.test_val1), self.precision),
-            np.around(0.0, self.precision))
+            np.around(0.0, self.precision),
+            'X calculated wrong for zero case')
         self.assertEqual(
             np.around(self.util.get_x_dot(self.test_val1), self.precision),
-            np.around(0.314159, self.precision))
+            np.around(0.314159, self.precision),
+            'X_Dot calculated wrong for zero case')
         self.assertEqual(
             np.around(self.util.get_x_ddot(self.test_val1), self.precision),
-            np.around(0.0, self.precision))
+            np.around(0.0, self.precision),
+            'X_Ddot calculated wrong for zero case')
         self.assertEqual(
             np.around(self.util.get_y(self.test_val1), self.precision),
-            np.around(0.0, self.precision))
+            np.around(0.0, self.precision),
+            'Y calculated wrong for zero case')
         self.assertEqual(
             np.around(self.util.get_y_dot(self.test_val1), self.precision),
-            np.around(0.62831, self.precision))
+            np.around(0.62831, self.precision),
+            'Y_Dot calculated wrong for zero case')
         self.assertEqual(
             np.around(self.util.get_y_ddot(self.test_val1), self.precision),
-            np.around(0.0, self.precision))
+            np.around(0.0, self.precision),
+            'Y_Ddot calculated wrong for zero case')
         self.assertEqual(
             np.around(self.util.get_linear_vel(self.test_val1), self.precision),
-            np.around(0.702481, self.precision))
+            np.around(0.702481, self.precision),
+            'Linear vel calculated wrong for zero case')
         self.assertEqual(
             np.around(self.util.get_rotational_vel(self.test_val1), self.precision),
-            np.around(0.0, self.precision))
+            np.around(0.0, self.precision),
+            'Rotate vel calculated wrong for zero case')
 
     def test_one_all(self):
         self.assertEqual(
             np.around(self.util.get_x(self.test_val2), self.precision),
-            np.around(0.293892, self.precision))
+            np.around(0.293892, self.precision),
+            'X calculated wrong for one case')
         self.assertEqual(
             np.around(self.util.get_x_dot(self.test_val2), self.precision),
-            np.around(0.2541601, self.precision))
+            np.around(0.2541601, self.precision),
+            'X_Dot calculated wrong for one case')
         self.assertEqual(
             np.around(self.util.get_x_ddot(self.test_val2), self.precision),
-            np.around(-0.116024, self.precision))
+            np.around(-0.116024, self.precision),
+            'X_Ddot calculated wrong for one case')
         self.assertEqual(
             np.around(self.util.get_y(self.test_val2), self.precision),
-            np.around(0.4755282, self.precision))
+            np.around(0.4755282, self.precision),
+            'Y calculated wrong for one case')
         self.assertEqual(
             np.around(self.util.get_y_dot(self.test_val2), self.precision),
-            np.around(0.194161, self.precision))
+            np.around(0.194161, self.precision),
+            'Y_Dot calculated wrong for one case')
         self.assertEqual(
             np.around(self.util.get_y_ddot(self.test_val2), self.precision),
-            np.around(-0.750924, self.precision))
+            np.around(-0.750924, self.precision),
+            'Y_Ddot calculated wrong for one case')
         self.assertEqual(
             np.around(self.util.get_linear_vel(self.test_val2), self.precision),
-            np.around(0.319837, self.precision))
+            np.around(0.319837, self.precision),
+            'Linear Vel calculated wrong for one case')
         self.assertEqual(
             np.around(self.util.get_rotational_vel(self.test_val2), self.precision),
-            np.around(-1.64549, self.precision))
+            np.around(-1.64549, self.precision),
+            'Rotate vel calculated wrong for one case')
 
     def test_random_val_all(self):
         self.assertEqual(
-            np.around(self.util.get_x(self.test_val2), self.precision),
-            np.around(0.102931, self.precision))
+            np.around(self.util.get_x(self.test_val3), self.precision),
+            np.around(0.102931, self.precision),
+            'X calculated wrong for random case')
         self.assertEqual(
-            np.around(self.util.get_x_dot(self.test_val2), self.precision),
-            np.around(-0.307430, self.precision))
+            np.around(self.util.get_x_dot(self.test_val3), self.precision),
+            np.around(-0.307430, self.precision),
+            'X_Dot calculated wrong for random case')
         self.assertEqual(
-            np.around(self.util.get_x_ddot(self.test_val2), self.precision),
-            np.around(-0.040635, self.precision))
+            np.around(self.util.get_x_ddot(self.test_val3), self.precision),
+            np.around(-0.040635, self.precision),
+            'X_Ddot calculated wrong for random case')
         self.assertEqual(
-            np.around(self.util.get_y(self.test_val2), self.precision),
-            np.around(-0.201453, self.precision))
+            np.around(self.util.get_y(self.test_val3), self.precision),
+            np.around(-0.201453, self.precision),
+            'Y calculated wrong for random case')
         self.assertEqual(
-            np.around(self.util.get_y_dot(self.test_val2), self.precision),
-            np.around(0.575062, self.precision))
+            np.around(self.util.get_y_dot(self.test_val3), self.precision),
+            np.around(0.575062, self.precision),
+            'Y_Dot calculated wrong for random case')
         self.assertEqual(
-            np.around(self.util.get_y_ddot(self.test_val2), self.precision),
-            np.around(0.3181221, self.precision))
+            np.around(self.util.get_y_ddot(self.test_val3), self.precision),
+            np.around(0.3181221, self.precision),
+            'Y_Ddot calculated wrong for random case')
         self.assertEqual(
-            np.around(self.util.get_linear_vel(self.test_val2), self.precision),
-            np.around(0.6520819, self.precision))
+            np.around(self.util.get_linear_vel(self.test_val3), self.precision),
+            np.around(0.6520819, self.precision),
+            'Linear vel calculated wrong for random case')
         self.assertEqual(
-            np.around(self.util.get_rotational_vel(self.test_val2), self.precision),
-            np.around(-0.175048, self.precision))
+            np.around(self.util.get_rotational_vel(self.test_val3), self.precision),
+            np.around(-0.175048, self.precision),
+            'Rotate vel calculated wrong for random case')
 
     def test_full_cycle(self):
         # These test values should be the same test_zero_all
         self.assertEqual(
-            np.around(self.util.get_x(self.test_val1), self.precision),
-            np.around(0.0, self.precision))
+            np.around(self.util.get_x(self.test_val4), self.precision),
+            np.around(0.0, self.precision),
+            'X calculated wrong for full case')
         self.assertEqual(
-            np.around(self.util.get_x_dot(self.test_val1), self.precision),
-            np.around(0.314159, self.precision))
+            np.around(self.util.get_x_dot(self.test_val4), self.precision),
+            np.around(0.314159, self.precision),
+            'X_Dot calculated wrong for full case')
         self.assertEqual(
-            np.around(self.util.get_x_ddot(self.test_val1), self.precision),
-            np.around(0.0, self.precision))
+            np.around(self.util.get_x_ddot(self.test_val4), self.precision),
+            np.around(0.0, self.precision),
+            'X_Ddot calculated wrong for full case')
         self.assertEqual(
-            np.around(self.util.get_y(self.test_val1), self.precision),
-            np.around(0.0, self.precision))
+            np.around(self.util.get_y(self.test_val4), self.precision),
+            np.around(0.0, self.precision),
+            'Y calculated wrong for full case')
         self.assertEqual(
-            np.around(self.util.get_y_dot(self.test_val1), self.precision),
-            np.around(0.62831, self.precision))
+            np.around(self.util.get_y_dot(self.test_val4), self.precision),
+            np.around(0.62831, self.precision),
+            'Y_Dot calculated wrong for full case')
         self.assertEqual(
-            np.around(self.util.get_y_ddot(self.test_val1), self.precision),
-            np.around(0.0, self.precision))
+            np.around(self.util.get_y_ddot(self.test_val4), self.precision),
+            np.around(0.0, self.precision),
+            'Y_Ddot calculated wrong for full case')
         self.assertEqual(
-            np.around(self.util.get_linear_vel(self.test_val1), self.precision),
-            np.around(0.702481, self.precision))
+            np.around(self.util.get_linear_vel(self.test_val4), self.precision),
+            np.around(0.702481, self.precision),
+            'Linear vel calculated wrong for full case')
         self.assertEqual(
-            np.around(self.util.get_rotational_vel(self.test_val1), self.precision),
-            np.around(0.0, self.precision))
+            np.around(self.util.get_rotational_vel(self.test_val4), self.precision),
+            np.around(0.0, self.precision),
+            'Rotate vel calculated wrong for full case')
 
 if __name__ == '__main__':
     import rosunit
