@@ -10,7 +10,7 @@ from enum import Enum
 from geometry_msgs.msg import TransformStamped, Twist, Vector3
 import rospy
 from std_srvs.srv import Empty, EmptyResponse
-import tf
+import tf_conversions
 import tf2_ros
 
 
@@ -100,7 +100,7 @@ class Trajectory:
         static_transformStamped.transform.translation.y = float(self._init_y)
         static_transformStamped.transform.translation.z = float(0.0)
         # Transform rotation translation
-        quat = tf.transformations.quaternion_from_euler(0, 0, self._init_theta)
+        quat = tf_conversions.transformations.quaternion_from_euler(0, 0, self._init_theta)
         static_transformStamped.transform.rotation.x = quat[0]
         static_transformStamped.transform.rotation.y = quat[1]
         static_transformStamped.transform.rotation.z = quat[2]
@@ -139,13 +139,24 @@ class Trajectory:
             linear_vel = self.traj_util.get_linear_vel(self.time_stamp)
             angular_vel = self.traj_util.get_rotational_vel(self.time_stamp)
             cmd_vel = Twist(linear=linear_vel, angular=angular_vel)
-            self.pub(cmd_vel)
+            self._pub.publish(cmd_vel)
             self.time_stamp += self.time_delta
         elif self.state == State.PAUSED:
             linear_vel = Vector3(x=0)
             angular_vel = Vector3(z=0)
             cmd_vel = Twist(linear=linear_vel, angular=angular_vel)
-            self.pub(cmd_vel)
+            self._pub.publish(cmd_vel)
+        else: 
+            rospy.signal_shutdown("Trajectory node has entered undefined state")
+            exit(1)
+
+# Main execution loop
+if __name__ == "__main__":
+    try:
+        traj_node = Trajectory()
+    #If something kills this node, have it die
+    except rospy.ROSInterruptException:
+        pass
 
 
 

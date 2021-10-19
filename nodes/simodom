@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+# Simodom Node
+# RKS
+
+# Project imports
+
+# Python imports
+
+# 3rd-party imports
+import geometry_msgs.msg as geomsg #using Pose, PoseWithCovariance, Twist, TwistWithCovariance
+import nav_msgs.msg as navmsg #using Odometry
+import rospy
+import tf_conversions
+import tf2_ros
+import turtlesim.msg as turmsg #using Pose
+
+class Simodom:
+    """
+    ROS Node responsible for converting turtle's pose from odometry frame to
+    base_link frame. Contains a subscriber for the turtle's pose and publishes
+    it in a nav_msgs/Odometry. 
+
+    The node also broadcast a dynamic transform from odom frame to base_link 
+    frame; these frames are aligned in rotation with no translational difference.
+    (Their transformation matrix consist of a zero magnitude translation vector and
+    an identity rotation matrix)  
+     
+    PUBLISHERS:
+        + odom nav_msgs/Odometry ~ position and velocity of the robot in odometry frame
+
+    SUBSCRIBER:
+        + turtle1/pose Pose ~ current position and velocity of the robot  
+
+    BROADCAST:
+        + dynamic odom -> base_link ~ transformation from odometry to base_link 
+    """
+    def __init__(self):
+        """
+        Constructor of ROS Node Trajectory class. Creates all ROS 
+        interfaces(subscriber, publisher, etc) as well as internal variable
+        for calculations.
+        """
+        # Subscriber of turtle pose
+        self._pose_sub = rospy.Subscribe('turtle1/pose', turmsg.Pose, self.pose_callback)
+        # Publishes of odometry
+        self._odom_pub = rospy.Publisher('/odom', navmsg.Odometry, queue_size=1)
+        # Broadcast transform
+        self._broadcaster = tf2_ros.TransformBroadcaster()
+
+    def pose_callback(self, msg):
+        """
+        Callback fcn for pose subscriber
+
+        Args:
+        Turtlesim/Pose pose ~ position and velocity of the robot
+
+        Publishes:
+        Navmsg/Odometry pub_odom ~ position and velocity of the robot in the
+            odometry frame
+
+        Broadcast:
+        geometry.msg/TransformStamped t ~ dynamic broadcast providing transform 
+            from odom to base_link
+        """
+        # Prep Odometry message
+        pub_odom = navmsg.Odometry()
+        pub_odom.header.frame_id = 'odom'
+        pub_odom.child_frame_id = 'base_link'
+
+        # Fill PoseWithCovariance for Odometry
+        tmp_point = geomsg.Point(x=msg.x, y=msg.y)
+        quat = tf_conversions.transformations.quaternion_from_euler(0, 0, msg.theta)
+        tmp_quat = geomsg.Quaternion(x=quat[0],y=quat[1],z=quat[2],w=quat[3])
+        tmp_pose = geomsg.Pose(position=tmp_point, orientation=tmp_quat)
+        tmp_pose_cov = geomsg.PoseWithCovariance(pose=tmp_pose)
+        pub_odom.pose = tmp_pose_cov
+
+        # Fill TwistWithCovariance for Odometry
+        tmp_linear = geomsg.Vector3(x=msg.linear_velocity)
+        tmp_angular = geomsg.Vector3(z=msg.angular_velocity)
+        tmp_twist = geomsg.Twist(linear=tmp_linear, angular=tmp_angular)
+        tmp_twist_cov = geomsg.TwistWithCovariance(twist=tmp_twist)
+        pub_odom.twist = tmp_twist_cov
+
+        # Prep Frame transform for odom to base_link
+        t = geomsg.TransformStamped()
+        t.header.stamp = rospy.Time.now()
+        t.header.frame_id = 'odom'
+        t.child_frame_id = 'base_link'
+        t.transform.translation.x = msg.x
+        t.transform.translation.y = msg.y
+        t.transform.translation.z = 0
+        t.transform.rotation.x = quat[0]
+        t.transform.rotation.y = quat[1]
+        t.transform.rotation.z = quat[2]
+        t.transform.rotation.w = quat[3]
+        
+        # Publish Odometry
+        self._odom_pub.publish(pub_odom)
+        # Send transform
+        self._broadcaster.sendTransform(t)
+
+
+
+
+
