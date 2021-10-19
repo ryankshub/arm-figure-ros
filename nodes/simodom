@@ -41,11 +41,12 @@ class Simodom:
         for calculations.
         """
         # Subscriber of turtle pose
-        self._pose_sub = rospy.Subscribe('turtle1/pose', turmsg.Pose, self.pose_callback)
+        self._pose_sub = rospy.Subscriber('turtle1/pose', turmsg.Pose, self.pose_callback)
         # Publishes of odometry
         self._odom_pub = rospy.Publisher('/odom', navmsg.Odometry, queue_size=1)
         # Broadcast transform
         self._broadcaster = tf2_ros.TransformBroadcaster()
+        rospy.init_node('simodom')
 
     def pose_callback(self, msg):
         """
@@ -100,7 +101,20 @@ class Simodom:
         # Send transform
         self._broadcaster.sendTransform(t)
 
+def main():
+    """
+    Main execution loop for simodom node
+    """
+    simodom = Simodom()
+    rospy.spin()
 
+# Main Execution loop
+if __name__ == "__main__":
+    try:
+        main()
+    #If something kills this node, have it die
+    except rospy.ROSInterruptException:
+        pass
 
 
 

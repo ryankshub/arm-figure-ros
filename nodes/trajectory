@@ -77,7 +77,7 @@ class Trajectory:
         self.width = rospy.get_param("homework2/width")
         self.height = rospy.get_param("homework2/height")
         self.period = rospy.get_param("homework2/period")
-        self._pub_rate = rospy.get_param("~pub_rate")
+        self._pub_rate = rospy.get_param('~pub_freq')
         self.time_stamp = 0
         # Create TrajUtil for calculations
         self.traj_util = su.TrajUtil(self.width, self.height, self.period)
