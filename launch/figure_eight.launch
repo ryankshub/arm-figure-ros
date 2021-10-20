@@ -3,8 +3,9 @@
     <arg name="pub_freq" default="1"/>
     <arg name="mode" default="sim"/>
     <rosparam command="load" file="$(find homework2)/config/trajectory.yaml"/>
-    <node name="trajectory" pkg="homework2" type="trajectory">
+    <node name="trajectory" pkg="homework2" type="trajectory" output='screen'>
         <param name="pub_freq" type="int" value="$(arg pub_freq)"/>
+        <param name="mode" type="str" value="$(arg mode)"/>
     </node>
     <group if="$(eval arg('mode') == 'sim')">
         <node name="simodom" pkg="homework2" type="simodom"/>

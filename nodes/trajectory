@@ -9,6 +9,7 @@ from enum import Enum
 # 3rd-party imports
 from geometry_msgs.msg import TransformStamped, Twist, Vector3
 import rospy
+from rospy.exceptions import ROSInitException
 from std_srvs.srv import Empty, EmptyResponse
 import tf_conversions
 import tf2_ros
@@ -61,6 +62,10 @@ class Trajectory:
         interfaces(subscriber, publisher, etc) as well as internal variable
         for calculations.
 
+        Throws:
+            ROSInitException
+                throws if rosparam `mode` is not `sim` or `real`
+
         Public members
         float: width ~ width of the figure 8
         float: height ~ height of the figure 8
@@ -74,12 +79,21 @@ class Trajectory:
         self.height = rospy.get_param("homework2/height")
         self.period = rospy.get_param("homework2/period")
         self._pub_rate = rospy.get_param('~pub_freq')
+        self._mode = rospy.get_param('~mode')
         self._time_stamp = 0
         # Create TrajUtil for calculations
         self.traj_util = su.TrajUtil(self.width, self.height, self.period)
         self._init_theta = self.traj_util.get_theta(self._time_stamp)
         # Publisher for command velocities
-        self._pub = rospy.Publisher('/turtle1/cmd_vel', Twist, queue_size=10)
+        self._pub_topic = None
+        if self._mode == "real":
+            self._pub_topic = '/cmd_vel'
+        elif self._mode == "sim":
+            self._pub_topic = '/turtle1/cmd_vel'
+        else:
+            raise ROSInitException("mode must be either `sim` for simulation or" 
+            " `real` for actual turtle motions")
+        self._pub = rospy.Publisher(self._pub_topic, Twist, queue_size=10)
         # Service for resume
         self._resume_service = rospy.Service('resume', Empty, self.resume_handler)
         # Service for pause

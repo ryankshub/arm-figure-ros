@@ -1,7 +1,7 @@
 #Yaml file for trajectory params
 
 homework2: #namespace for the whole package
-  width: 2 # width of figure 8
-  height: 3 # height of figure 8
+  width: 1 # width of figure 8
+  height: 1 # height of figure 8
   period: 30 # number of seconds to complete 
   
