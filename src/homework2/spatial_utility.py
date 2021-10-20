@@ -144,6 +144,25 @@ class TrajUtil:
         y_ddot = A * np.sin( (4*np.pi*time_s) / self.period_s )
         return y_ddot
 
+    def get_theta(self, time_s):
+        """
+        Given a time, return the initial theta of the robot, where
+
+        theta = atan(y_dot/x_dot)
+
+        Args:
+        float time_s:
+            time since robot started doing figure 8 in seconds
+        
+        Rtn:
+        float theta:
+            angle of the robot in radians. range [-pi, pi]
+        """
+        ydot = self.get_y_dot(time_s)
+        xdot = self.get_x_dot(time_s)
+        theta = np.arctan2(ydot, xdot)
+        return theta
+
     def get_linear_vel(self, time_s):
         """
         Given a time, return the linear velocity command where

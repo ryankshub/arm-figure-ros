@@ -32,6 +32,7 @@ class BasicTestCase(unittest.TestCase):
         self.test_val4 = 10
         self.precision = 4
 
+
     def test_zero_all(self):
         self.assertEqual(
             np.around(self.util.get_x(self.test_val1), self.precision),
@@ -58,6 +59,10 @@ class BasicTestCase(unittest.TestCase):
             np.around(0.0, self.precision),
             'Y_Ddot calculated wrong for zero case')
         self.assertEqual(
+            np.around(self.util.get_theta(self.test_val1), self.precision),
+            np.around(1.107143, self.precision),
+            'Theta calculated wrong for zero case')
+        self.assertEqual(
             np.around(self.util.get_linear_vel(self.test_val1), self.precision),
             np.around(0.702481, self.precision),
             'Linear vel calculated wrong for zero case')
@@ -65,6 +70,7 @@ class BasicTestCase(unittest.TestCase):
             np.around(self.util.get_rotational_vel(self.test_val1), self.precision),
             np.around(0.0, self.precision),
             'Rotate vel calculated wrong for zero case')
+
 
     def test_one_all(self):
         self.assertEqual(
@@ -92,6 +98,10 @@ class BasicTestCase(unittest.TestCase):
             np.around(-0.750924, self.precision),
             'Y_Ddot calculated wrong for one case')
         self.assertEqual(
+            np.around(self.util.get_theta(self.test_val2), self.precision),
+            np.around(0.6523580, self.precision),
+            'Theta calculated wrong for zero case')
+        self.assertEqual(
             np.around(self.util.get_linear_vel(self.test_val2), self.precision),
             np.around(0.319837, self.precision),
             'Linear Vel calculated wrong for one case')
@@ -99,6 +109,7 @@ class BasicTestCase(unittest.TestCase):
             np.around(self.util.get_rotational_vel(self.test_val2), self.precision),
             np.around(-1.64549, self.precision),
             'Rotate vel calculated wrong for one case')
+
 
     def test_random_val_all(self):
         self.assertEqual(
@@ -126,6 +137,10 @@ class BasicTestCase(unittest.TestCase):
             np.around(0.3181221, self.precision),
             'Y_Ddot calculated wrong for random case')
         self.assertEqual(
+            np.around(self.util.get_theta(self.test_val3), self.precision),
+            np.around(2.061741, self.precision),
+            'Theta calculated wrong for zero case')
+        self.assertEqual(
             np.around(self.util.get_linear_vel(self.test_val3), self.precision),
             np.around(0.6520819, self.precision),
             'Linear vel calculated wrong for random case')
@@ -133,6 +148,7 @@ class BasicTestCase(unittest.TestCase):
             np.around(self.util.get_rotational_vel(self.test_val3), self.precision),
             np.around(-0.175048, self.precision),
             'Rotate vel calculated wrong for random case')
+
 
     def test_full_cycle(self):
         # These test values should be the same test_zero_all
@@ -160,6 +176,10 @@ class BasicTestCase(unittest.TestCase):
             np.around(self.util.get_y_ddot(self.test_val4), self.precision),
             np.around(0.0, self.precision),
             'Y_Ddot calculated wrong for full case')
+        self.assertEqual(
+            np.around(self.util.get_theta(self.test_val4), self.precision),
+            np.around(1.107143, self.precision),
+            'Theta calculated wrong for zero case')
         self.assertEqual(
             np.around(self.util.get_linear_vel(self.test_val4), self.precision),
             np.around(0.702481, self.precision),

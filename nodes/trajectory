@@ -53,9 +53,6 @@ class Trajectory:
         + float width ~ the width of the figure 8 in meters
         + float height ~ the height of the figure 8 in meters
         + float period ~ the number of seconds to complete the figure 8
-        + float x ~ the initial x position(in meters) [0,10]
-        + float y ~ the initial y position(in meters) [0,10]
-        + float theta ~ the initial theta position(in radians) (-pi, pi]
         + float pub_rate [PRIVATE] ~ rate of publishing command (in HZ)
     """
     def __init__(self):
@@ -69,17 +66,18 @@ class Trajectory:
         float: height ~ height of the figure 8
         float: period ~ number of second to complete figure 8 loop
         State: state ~ Whether the turtle is following figure 8 or not
+        TrajUtil: traj_util ~ Utility object for calculating robot kinematics
         """
         # Pull params
         rospy.init_node('trajectory')
-        self._init_theta = rospy.get_param("homework2/init_theta")
         self.width = rospy.get_param("homework2/width")
         self.height = rospy.get_param("homework2/height")
         self.period = rospy.get_param("homework2/period")
         self._pub_rate = rospy.get_param('~pub_freq')
-        self.time_stamp = 0
+        self._time_stamp = 0
         # Create TrajUtil for calculations
         self.traj_util = su.TrajUtil(self.width, self.height, self.period)
+        self._init_theta = self.traj_util.get_theta(self._time_stamp)
         # Publisher for command velocities
         self._pub = rospy.Publisher('/turtle1/cmd_vel', Twist, queue_size=10)
         # Service for resume
@@ -98,26 +96,37 @@ class Trajectory:
         static_transformStamped.transform.translation.x = float(0.0)
         static_transformStamped.transform.translation.y = float(0.0)
         static_transformStamped.transform.translation.z = float(0.0)
+        
         # Transform rotation translation
         quat = tf_conversions.transformations.quaternion_from_euler(0, 0, self._init_theta)
         static_transformStamped.transform.rotation.x = quat[0]
         static_transformStamped.transform.rotation.y = quat[1]
         static_transformStamped.transform.rotation.z = quat[2]
         static_transformStamped.transform.rotation.w = quat[3]
-
+        
+        # Broadcast static transformation
         broadcaster.sendTransform(static_transformStamped)
+        
         # Start State
         self.state = State.PAUSED
 
         #init node
-        self.time_delta = 1./self._pub_rate
-        rospy.Timer(rospy.Duration(self.time_delta), self.main_loop)
+        self._time_delta = 1./self._pub_rate
+        rospy.Timer(rospy.Duration(self._time_delta), self.main_loop)
         rospy.spin()
 
     
     def resume_handler(self, req):
         """
-        Service handler which tells the turtle to keep moving
+        Service handler for `resume` service. 
+        Tells the turtle to keep moving.
+
+        Args:
+        Empty req ~ request to trigger service. Contains no data
+
+        Rtn:
+        EmptyResponse ~ response to indicate state change. 
+            Contains no data
         """
         self.state = State.RUNNING
         return EmptyResponse()
@@ -125,10 +134,19 @@ class Trajectory:
 
     def pause_handler(self, req):
         """
-        Service handler which tells the turtle to stop moving
+        Service handler for `resume` service.
+        Tells the turtle to stop moving.
+
+        Args:
+        Empty req ~ request to trigger service. Contains no data
+
+        Rtn:
+        EmptyResponse ~ response to indicate state change. 
+            Contains no data
         """
         self.state = State.PAUSED
         return EmptyResponse()
+
 
     def main_loop(self, event):
         """
@@ -139,19 +157,22 @@ class Trajectory:
         """
         # Publish cmd_vel if turtle is running
         if self.state == State.RUNNING:
-            linear_vel = self.traj_util.get_linear_vel(self.time_stamp)
+            linear_vel = self.traj_util.get_linear_vel(self._time_stamp)
             linear_vel = Vector3(x=linear_vel)
-            angular_vel = self.traj_util.get_rotational_vel(self.time_stamp)
+            angular_vel = self.traj_util.get_rotational_vel(self._time_stamp)
             angular_vel = Vector3(z=angular_vel)
             cmd_vel = Twist(linear=linear_vel, angular=angular_vel)
             self._pub.publish(cmd_vel)
-            self.time_stamp += self.time_delta
+            self._time_stamp += self._time_delta
+
         # Publish zero cmd_vel if turtle is paused
         elif self.state == State.PAUSED:
             linear_vel = Vector3(x=0)
             angular_vel = Vector3(z=0)
             cmd_vel = Twist(linear=linear_vel, angular=angular_vel)
             self._pub.publish(cmd_vel)
+
+        # Something has gone horribly and this node should die    
         else: 
             rospy.signal_shutdown("Trajectory node has entered undefined state")
             exit(1)
