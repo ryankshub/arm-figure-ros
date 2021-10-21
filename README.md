@@ -80,7 +80,9 @@ Running `sim`:
 https://user-images.githubusercontent.com/90436131/138294896-0b74be56-29c7-45f7-8263-720d015b4a9e.mp4
 
 Running `real`:
-[VIDEO LINK]
+
+https://user-images.githubusercontent.com/90436131/138296408-b520e8d8-0aaa-4497-bd3c-2331cf5ee285.mp4
+
 
 Note: `mode` must be either `sim` or `real`; any other value will cause an error. If `mode` is
 not provided, it's defaults to `sim`. 
