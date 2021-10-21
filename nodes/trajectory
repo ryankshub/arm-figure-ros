@@ -75,9 +75,9 @@ class Trajectory:
         """
         # Pull params
         rospy.init_node('trajectory')
-        self.width = rospy.get_param("homework2/width")
-        self.height = rospy.get_param("homework2/height")
-        self.period = rospy.get_param("homework2/period")
+        self.width = rospy.get_param("homework2/fig8/width")
+        self.height = rospy.get_param("homework2/fig8/height")
+        self.period = rospy.get_param("homework2/fig8/period")
         self._pub_rate = rospy.get_param('~pub_freq')
         self._mode = rospy.get_param('~mode')
         self._time_stamp = 0

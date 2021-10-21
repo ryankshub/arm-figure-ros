@@ -1,5 +1,8 @@
 # Yaml file configuration for 2-dof xacro file
-L1: 2
-L2: 1
-R1: 0.2
-R2: 0.2
+
+homework2: #namespace for the package
+  twoarm:  #namespace for 2-dof arm functionality
+    L1: 2  #length of 1st link (in meters)
+    L2: 1  #length of 2nd link (in meters)
+    R1: 0.2 #thickness of 1st link (radius in meters)
+    R2: 0.2 #thickness of 2nd link (radius in meters)
