@@ -1,0 +1,15 @@
+<!-- Launch file for RAWR -->
+<launch>
+    <!-- Include launchfiles -->
+    <include file="$(find homework2)/launch/arm_basics.launch" pass_all_args="true"/>
+    <arg name="mark_pub_freq" default="10"/>
+    <arg name="arm_pub_freq" default="20"/>
+    <rosparam command="load" file="$(find homework2)/config/arm.yaml"/>
+    <node name="arm_traj" pkg="homework2" type="arm_traj" unless="$(arg use_jsp)">
+        <param name="pub_freq" type="int" value="$(arg arm_pub_freq)"/>
+    </node>
+    <node name="arm_marker" pkg="homework2" type="arm_marker" output="screen">
+        <param name="pub_freq" type="int" value="$(arg mark_pub_freq)"/>
+    </node>
+
+</launch>

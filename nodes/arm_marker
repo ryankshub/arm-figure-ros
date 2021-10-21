@@ -8,6 +8,7 @@
 
 # 3rd-party imports
 import rospy
+from rospy.core import loginfo
 import tf2_ros
 from visualization_msgs.msg import Marker
 
@@ -28,7 +29,7 @@ class ArmMarker:
         self.period = rospy.get_param("homework2/twoarm/T")
         self._pub_rate = rospy.get_param('~pub_freq', default=5)
         # set up Publisher
-        self._pub = rospy.Publisher('visualization_marker', Marker, queue_size=1)
+        self._pub = rospy.Publisher('visualization_marker', Marker, queue_size=10)
         # set up Listener
         self._tfBuffer = tf2_ros.Buffer()
         self._listener = tf2_ros.TransformListener(self._tfBuffer)
@@ -52,22 +53,32 @@ class ArmMarker:
             event: A rospy.Timer event
         """
         try:
-            trans = self._tfBuffer.lookup_transform("base_link", "end_effector", rospy.Time())
+            trans = self._tfBuffer.lookup_transform("base", "link_3", rospy.Time())
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, 
-            tf2_ros.ExtrapolationException):
+            tf2_ros.ExtrapolationException) as e:
             #End function early
             return None
 
         self._marker_msg.header.stamp = rospy.Time.now()
+        self._marker_msg.header.frame_id = 'base'
         if (trans.transform.translation.x > 0):
             self._marker_msg.type = Marker.SPHERE
-            self._marker_msg.color = [0,.8,0,1]
+            self._marker_msg.color.r = 0
+            self._marker_msg.color.g = .8
+            self._marker_msg.color.b = 0
+            self._marker_msg.color.a = 1
         else:
             self._marker_msg.type = Marker.CUBE
-            self._marker_msg.color = [.5,0,.5,1]
-
-        self._marker_msg.pose.position.x = trans.transform.translation.x
-        self._marker_msg.pose.position.y = trans.transform.translation.y
+            self._marker_msg.color.r = .5
+            self._marker_msg.color.g = 0
+            self._marker_msg.color.b = .5
+            self._marker_msg.color.a = 1
+            
+        self._marker_msg.scale.x = .3
+        self._marker_msg.scale.y = .3
+        self._marker_msg.scale.z = .3
+        self._marker_msg.pose.position = trans.transform.translation
+        self._marker_msg.pose.orientation = trans.transform.rotation
 
         self._pub.publish(self._marker_msg)
 

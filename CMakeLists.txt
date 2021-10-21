@@ -160,7 +160,7 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-  nodes/trajectory nodes/simodom nodes/arm_traj
+  nodes/trajectory nodes/simodom nodes/arm_traj nodes/arm_marker
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
