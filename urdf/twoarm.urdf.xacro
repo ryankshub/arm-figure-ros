@@ -4,10 +4,12 @@
     <xacro:property name="arm_yaml_file" value="$(find homework2)/config/arm.yaml"/>
     <xacro:property name="arm_props" value="${load_yaml(arm_yaml_file)}"/>
     <!-- Properties from arm.yaml -->
-    <xacro:property name="L1" value="${arm_props['L1']}"/>
-    <xacro:property name="L2" value="${arm_props['L2']}"/>
-    <xacro:property name="R1" value="${arm_props['R1']}"/>
-    <xacro:property name="R2" value="${arm_props['R2']}"/>
+    <xacro:property name="homework2_ns" value="${arm_props['homework2']}"/>
+    <xacro:property name="twoarm_ns" value="${homework2_ns['twoarm']}"/>
+    <xacro:property name="L1" value="${twoarm_ns['L1']}"/>
+    <xacro:property name="L2" value="${twoarm_ns['L2']}"/>
+    <xacro:property name="R1" value="${twoarm_ns['R1']}"/>
+    <xacro:property name="R2" value="${twoarm_ns['R2']}"/>
 
     <!-- Links -->
     <link name="base_link"/>

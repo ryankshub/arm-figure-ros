@@ -1,2 +1,102 @@
 #!/usr/bin/env python3
-# 
+# ArmTraj Node
+# RKS
+
+# Project imports
+
+# Python imports
+
+# 3rd-party imports
+import numpy as np
+from numpy.core.defchararray import join
+from sensor_msgs.msg import JointState
+from std_msgs.msg import Header
+import rospy
+
+
+class ArmTraj:
+    """
+    """
+    def __init__(self):
+        """
+        Constructor of ROS Node ArmTraj class. Creates all ROS 
+        interfaces(subscriber, publisher, etc) as well as internal variable
+        for calculations.
+
+        Public members
+        float: L1 ~ length of link 1 of arm
+        float: L2 ~ length of link 2 of arm
+        float: period ~ number of second to complete trajectory
+        """
+        # Pull params
+        rospy.init_node('arm_traj')
+        self.L1 = rospy.get_param("homework2/twoarm/L1")
+        self.L2 = rospy.get_param("homework2/twoarm/L2")
+        self.period = rospy.get_param("homework2/twoarm/T")
+        self._pub_rate = rospy.get_param('~pub_freq')
+        self._H = (2./3.)*(self.L1 + self.L2)
+        self._time_stamp = 0
+        # set up Publishers
+        self._pub = rospy.Publisher('joint_states', JointState, queue_size=10)
+        # set up Main loop
+        self._time_delta = 1./self._pub_rate
+        rospy.Timer(rospy.Duration(self._time_delta), self.main_loop)
+        rospy.spin()
+        
+
+    def get_joints(self, time_s):
+        """
+        """
+        # Solve for x,y
+        y = self._H
+        coeff_x1 = np.sqrt((self.L1 + self.L2)**2 - self._H**2)
+        coeff_x2 = 0.9*np.cos( (2*np.pi*time_s) / self.period )
+        x = coeff_x2*coeff_x1
+
+        # Solve alpha, beta, and gamma
+        alpha_top = x**2 + y**2 + self.L1**2 - self.L2**2
+        alpha_bottom = 2 * self.L1 * np.sqrt(x**2 + y**2)
+        alpha_combined = alpha_top/alpha_bottom
+        alpha = np.arccos( alpha_combined )
+
+        beta_top = self.L1**2 + self.L2**2 - x**2 - y**2
+        beta_bottom = 2 * self.L1 * self.L2
+        beta_combined = beta_top/beta_bottom
+        beta = np.arccos( beta_combined )
+
+        gamma = np.arctan2(y, x)
+
+        joint_1 = gamma - alpha
+        joint_2 = np.pi - beta
+
+        return joint_1, joint_2
+
+
+    def main_loop(self, event):
+        """
+        Main execution loop of arm trajectory node
+
+        Args:
+            event: A rospy.Timer event
+        """
+        # Get joints
+        joint_1, joint_2 = self.get_joints(self._time_stamp)
+        self._time_stamp += self._time_delta
+        # Set up msg
+        header = Header()
+        header.stamp = rospy.Time.now()
+        pub_joints = JointState()
+        pub_joints.header = header
+        pub_joints.name = ['joint_1','joint_2']
+        pub_joints.position = [joint_1, joint_2]
+        # Publish messages
+        self._pub.publish(pub_joints)
+
+        
+# Main execution loop
+if __name__ == "__main__":
+    try:
+        arm_traj = ArmTraj()
+    #If something kills this node, have it die
+    except rospy.ROSInterruptException:
+        pass

@@ -6,3 +6,4 @@ homework2: #namespace for the package
     L2: 1  #length of 2nd link (in meters)
     R1: 0.2 #thickness of 1st link (radius in meters)
     R2: 0.2 #thickness of 2nd link (radius in meters)
+    T: 20 #time to complete trajectory (in seconds)
