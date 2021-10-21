@@ -76,7 +76,8 @@ The `mode` determines if a simulation using rviz and turtlesim should run or if 
 are being sent to a real turtlebot. Set `mode` to `sim` for simulation or `real` for turtlebot interfacing. Examples of results are below:
 
 Running `sim`:
-[VIDEO LINK]
+
+https://user-images.githubusercontent.com/90436131/138294896-0b74be56-29c7-45f7-8263-720d015b4a9e.mp4
 
 Running `real`:
 [VIDEO LINK]
@@ -106,11 +107,12 @@ roslaunch homework2 arm_mark.launch use_jsp:=(true or false) [mark_pub_freq:=fre
 
 The `use_jsp` argument determines if the visualization will running with gui control or with trajectory control. In gui control, you can directly control the joint angles of the robot.
 
-[VIDEO LINK]
+https://user-images.githubusercontent.com/90436131/138295009-5fa19e68-b48e-42a5-bae0-e964633cbe94.mp4
 
 In trajecory control, joint angles are sent to the robot and cause this animation
 
-[VIDEO LINK]
+https://user-images.githubusercontent.com/90436131/138295193-2fbd0781-56c8-412c-b69b-f46c82e99ade.mp4
+
 
 where the changing shape represents the end-effector crossing the y-axis. 
 
