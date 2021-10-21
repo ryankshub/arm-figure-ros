@@ -34,6 +34,9 @@ class BasicTestCase(unittest.TestCase):
 
 
     def test_zero_all(self):
+        """
+        Test Case for when time = zero
+        """
         self.assertEqual(
             np.around(self.util.get_x(self.test_val1), self.precision),
             np.around(0.0, self.precision),
@@ -73,6 +76,9 @@ class BasicTestCase(unittest.TestCase):
 
 
     def test_one_all(self):
+        """
+        Test case for when time is 1
+        """
         self.assertEqual(
             np.around(self.util.get_x(self.test_val2), self.precision),
             np.around(0.293892, self.precision),
@@ -112,6 +118,9 @@ class BasicTestCase(unittest.TestCase):
 
 
     def test_random_val_all(self):
+        """
+        Test case for when time is during a figure cycle
+        """
         self.assertEqual(
             np.around(self.util.get_x(self.test_val3), self.precision),
             np.around(0.102931, self.precision),
@@ -151,6 +160,9 @@ class BasicTestCase(unittest.TestCase):
 
 
     def test_full_cycle(self):
+        """
+        Test case when robot completes 1 figure-8
+        """
         # These test values should be the same test_zero_all
         self.assertEqual(
             np.around(self.util.get_x(self.test_val4), self.precision),

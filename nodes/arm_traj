@@ -16,6 +16,17 @@ import rospy
 
 class ArmTraj:
     """
+    ROS Node responsible for 2-dof arm kinematic control. Publishes command 
+    joint angles to arm in order to move end effector through space along 
+    a certain trajectory.
+
+    PUBLISHERS:
+        + joint_states JointState ~ Commanded joint angles based on inverse kinematics
+            of desired end effector location.
+    
+    PARAMS:
+        + float period ~ the number of seconds to complete arm trajectory
+        + float pub_rate [PRIVATE] ~ rate of publishing command (in HZ)
     """
     def __init__(self):
         """
@@ -46,6 +57,14 @@ class ArmTraj:
 
     def get_joints(self, time_s):
         """
+        Given a time, return the joint_angle positions. This function 
+        uses time to calcuate the end_effector position and then uses a 
+        geometric solution for inverse kinematics to get joint angles.
+
+        Inverse kinematic solution is provided by:
+
+        `Lynch, K; Park, F.(2017). Modern Robotics: Mechanics, 
+        Planning, and Control: pg 213; Cambridge University Press`
         """
         # Solve for x,y
         y = self._H
@@ -74,7 +93,8 @@ class ArmTraj:
 
     def main_loop(self, event):
         """
-        Main execution loop of arm trajectory node
+        Main execution loop of arm trajectory node. 
+        Published joint angles
 
         Args:
             event: A rospy.Timer event

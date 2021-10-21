@@ -14,6 +14,27 @@ from visualization_msgs.msg import Marker
 
 class ArmMarker:
     """
+    ROS Node responsible for drawing marker to visualize end effector. 
+    Publishes a marker who's shape and color depend on the current location of
+    the end effector.
+
+    If the end effector has a positive x value, it appears as a green sphere.
+    Otherwise, the EE is represented as a purple square. 
+
+    In order to determine the EE's positions, the node also listens for broadcast 
+    from the base frame to the end effector's frame. 
+
+    PUBLISHERS:
+        + visualization_marker Marker ~ marker object being published.
+            The object should only last at for a fifth of the period param. 
+
+    LISTENERS:
+        + dynamic base -> effector ~ listen for a transformation operation to 
+            get the effector's pose
+    
+    PARAMS:
+        + float period ~ the number of seconds to complete arm trajectory
+        + float pub_rate [PRIVATE] ~ rate of publishing command (in HZ)
     """
     def __init__(self):
         """
@@ -47,7 +68,8 @@ class ArmMarker:
     
     def main_loop(self, event):
         """
-        Main execution loop of arm marker node
+        Main execution loop of arm marker node. 
+        Publishes marker
 
         Args:
             event: A rospy.Timer event

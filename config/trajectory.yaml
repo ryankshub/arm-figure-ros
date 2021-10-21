@@ -2,7 +2,7 @@
 
 homework2: #namespace for the whole package
   fig8:    #namespace for figure eight functionality
-    width: 1 # width of figure 8
-    height: 1 # height of figure 8
-    period: 30 # number of seconds to complete 
+    width: 2 # width of figure 8
+    height: 2 # height of figure 8
+    period: 20 # number of seconds to complete 
   
