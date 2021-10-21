@@ -1,4 +1,4 @@
-<!-- Launch file for homework 2 package -->
+<!-- Launch file for figure-8 turtle motion -->
 <launch>
     <arg name="pub_freq" default="1"/>
     <arg name="mode" default="sim"/>
