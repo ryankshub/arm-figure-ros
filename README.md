@@ -63,7 +63,7 @@ The full list of ros package dependencies can be found in `package.xml`.
 All code for this package was developed and test in Python 3 (specfically 3-8-10).  
 This package requires `numpy` in order to run. The version used was 1-17.4, however there is no 
 strong attachment to this version; other versions should work fine as long as they compatitble with
-the python version. Refer to [Numpy docs](NUMPY SITE) for installation information. 
+the python version. Refer to [Numpy docs](https://numpy.org/install/) for installation information. 
 
 ## **Execution**
 
