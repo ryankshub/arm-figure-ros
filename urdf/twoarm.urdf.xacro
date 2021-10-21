@@ -1,0 +1,91 @@
+<!-- Get properties from arm.yaml configuration -->
+<xacro:property name="arm_yaml_file" value="$(find homework2)/config/arm.yaml"/>
+<xacro:property name="arm_props" value="${load_yaml(yaml_file)}"/>
+<!-- Properties from arm.yaml -->
+<xacro:property name="L1" value="arm_props['L1']"/>
+<xacro:property name="L2" value="arm_props['L2']"/>
+<xacro:property name="R1" value="arm_props['R1']"/>
+<xacro:property name="R2" value="arm_props['R2']"/>
+<xacro:property name="pi" value="3.14159"/>
+
+<!-- Links -->
+<link name="base_link"/>
+<link name="link_1">
+    <visual>
+        <origin xyz="${L1}/2 0 0" rpy="${pi}/2 0 ${pi}/2"/>
+        <geometry>
+            <cylinder length="${L1}" radius="${R1}"/>
+        </geometry>
+        <material name="blue">
+            <color rgba="0 0 .8 1"/>
+        </material>
+    </visual>
+
+    <collision>
+        <origin xyz="${L1}/2 0 0" rpy="${pi}/2 0 ${pi}/2"/>
+        <geometry>
+            <cylinder length="${L1}" radius="${R1}"/>
+        </geometry>
+    </collision>
+
+    <inertial>
+        <origin xyz="${L1}/2 0 0" rpy="${pi}/2 0 ${pi}/2"/>
+        <mass value="1"/>
+        <inertia ixx="${(1.0/12.0)*(3*R1 + L1**2)}"
+                 ixy="0"
+                 ixz="0"
+                 iyy="${(1.0/12.0)*(3*R1 + L1**2)}"
+                 iyz="0"
+                 izz="${0.5*R1**2}"/>
+    </inertial>
+</link>
+
+<link name="link_2">
+    <visual>
+        <origin xyz="${L2}/2 0 0" rpy="${pi}/2 0 ${pi}/2"/>
+        <geometry>
+            <cylinder length="${L2}" radius="${R2}"/>
+        </geometry>
+        <material name="red">
+            <color rgba=".8 0 0 1"/>
+        </material>
+    </visual>
+    <collision>
+        <origin xyz="${L2}/2 0 0" rpy="${pi}/2 0 ${pi}/2"/>
+        <geometry>
+            <cylinder length="${L2}" radius="${R2}"/>
+        </geometry>
+    </collision>
+    <inertial>
+        <origin xyz="${L2}/2 0 0" rpy="${pi}/2 0 ${pi}/2"/>
+        <mass value="1"/>
+        <inertia ixx="${(1.0/12.0)*(3*R2 + L2**2)}"
+                 ixy="0"
+                 ixz="0"
+                 iyy="${(1.0/12.0)*(3*R2 + L2**2)}"
+                 iyz="0"
+                 izz="${0.5*R2**2}"/>
+    </inertial>
+</link>
+
+<link name="link_3"/>
+
+<!-- Joints -->
+<joint name="joint_1" type="continuous">
+    <parent link="base_link"/>
+    <child link="link_1"/>
+    <origin xyz="0 0 0"/>
+    <axis xyz="0 0 1"/>
+</joint>
+
+<joint name="joint_2" type="continuous">
+    <parent link="link_1">
+    <child link="link_2"/>
+    <origin xyz="${L1} 0 0"/>
+    <axis xyz="0 0 1"/>
+
+</joint name="end_effector" type="fixed">
+    <parent link="link_2">
+    <child link="link_3">
+    <origin xyz="${L2} 0 0"/>
+</joint>
